@@ -6,12 +6,6 @@ from torch_geometric.data import Data, Dataset
 
 class LondonTrafficDataset(Dataset):
     def __init__(self, root_dir, nodes_file, edges_file, traffic_file=None, lookback=12):
-        """
-        root_dir: Folder where your CSVs are
-        nodes_file: 'london_nodes_master.csv'
-        edges_file: 'london_edges_master.csv' (The one you just showed me)
-        traffic_file: Future file from Adarsh
-        """
         super().__init__()
         self.root_dir = root_dir
         self.lookback = lookback
@@ -28,15 +22,12 @@ class LondonTrafficDataset(Dataset):
         df_edges = pd.read_csv(self.edges_path)
         
         # 2. Construct Edge Index
-        # Your CSV uses 'u' and 'v' as the indices (0, 1, 2...)
         self.edge_index = torch.tensor(
             [df_edges['u'].values, df_edges['v'].values], 
             dtype=torch.long
         )
         
         # 3. Static Features
-        # We'll use 'speed_kph' and 'length' from your CSV
-        # Normalize: speed/120, length/1000
         speed = pd.to_numeric(df_edges['speed_kph'], errors='coerce').fillna(30) / 120.0
         length = pd.to_numeric(df_edges['length'], errors='coerce').fillna(50) / 1000.0
         
